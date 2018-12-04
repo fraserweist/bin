@@ -17,6 +17,21 @@ def new_branch(args):
     commands.push(args.remote, args.branch, u=True)
 
 
+def kill_branch(args):
+    repo = git.Repo(".")
+    commands = repo.git
+    cur_branch = repo.active_branch.name
+    if args.branch is None:
+        args.branch = cur_branch
+    if args.branch == "master":
+        raise RuntimeError("please don't delete master!")
+    print("checking out master")
+    commands.checkout("master")
+    print(commands.branch(args.branch, D=True))
+    print("deleting branch {} from remote {}".format(args.branch, args.remote))
+    commands.push(args.remote, args.branch, delete=True)
+
+
 def commit_all(args):
     repo = git.Repo(".")
     commands = repo.git
@@ -38,19 +53,6 @@ def merged_pr(args):
         print(commands.checkout("master"))
     print(commands.branch(args.branch, D=True))
     print(commands.pull('origin', 'master', rebase=True))
-
-
-def kill_branch(args):
-    repo = git.Repo(".")
-    commands = repo.git
-    cur_branch = repo.active_branch.name
-    if args.branch is None:
-        args.branch = cur_branch
-    if args.branch == "master":
-        raise RuntimeError("please don't delete master!")
-    print(commands.checkout("master"))
-    print(commands.branch(args.branch, D=True))
-    print(commands.push(args.remote, args.branch, delete=True))
 
 
 def fraygit_parser():
