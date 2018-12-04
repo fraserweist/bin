@@ -9,8 +9,8 @@ def new_branch(args):
     commands = repo.git
     commands.checkout("master")
     commands.pull('origin', 'master', rebase=True)
-    commands.checkout(b=args.branch_name)
-    commands.push(args.fork, args.branch_name, u=True)
+    commands.checkout(b=args.branch)
+    commands.push(args.remote, args.branch, u=True)
 
 
 def commit_all(args):
@@ -58,10 +58,10 @@ def fraygit_parser():
         "new-branch", help="add a new local branch and push it upstream"
     )
     parser_new_branch.add_argument(
-        "branch_name", metavar="branch-name", help="name of new branch"
+        "remote", help="name of remote"
     )
     parser_new_branch.add_argument(
-        "--fork", default="origin", help="name of forked remote"
+        "branch", help="name of new branch"
     )
     parser_new_branch.set_defaults(func=new_branch)
 
