@@ -25,9 +25,28 @@ def commit_all(args):
 def merged_pr(args):
     repo = git.Repo(".")
     commands = repo.git
-    print(commands.checkout("master"))
+    cur_branch = repo.active_branch.name
+    if args.branch is None:
+        args.branch = cur_branch
+    if args.branch == "master":
+        raise RuntimeError("please don't delete master!")
+    if cur_branch != "master":
+        print(commands.checkout("master"))
     print(commands.branch(args.branch, D=True))
     print(commands.pull('origin', 'master', rebase=True))
+
+
+def kill_branch(args):
+    repo = git.Repo(".")
+    commands = repo.git
+    cur_branch = repo.active_branch.name
+    if args.branch is None:
+        args.branch = cur_branch
+    if args.branch == "master":
+        raise RuntimeError("please don't delete master!")
+    print(commands.checkout("master"))
+    print(commands.branch(args.branch, D=True))
+    print(commands.push(args.remote, args.branch, delete=True))
 
 
 def fraygit_parser():
@@ -60,9 +79,21 @@ def fraygit_parser():
         "merged-pr", help="delete branch and rebase master when PR is merged"
     )
     parser_merged_pr.add_argument(
-        "branch", help="name of development branch"
+        "branch", default=None, help="name of development branch"
     )
     parser_merged_pr.set_defaults(func=merged_pr)
+
+    # `kill-branch` subcommand
+    parser_kill_branch = subparsers.add_parser(
+        "kill-branch", help="delete local and remote branch"
+    )
+    parser_kill_branch.add_argument(
+        "remote", help="remote name to delete branch from"
+    )
+    parser_kill_branch.add_argument(
+        "branch", help="branch name to delete"
+    )
+    parser_kill_branch.set_defaults(func=kill_branch)
 
     return parser
 
