@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+import git
+import argparse
+
+def new_branch(args):
+    repo = git.Repo(".")
+    commands = repo.git
+    commands.checkout("master")
+    commands.pull('origin', 'master', rebase=True)
+    commands.checkout(b=args.branch_name)
+    commands.push(args.fork, args.branch_name, u=True)
+
+def fraygit_parser():
+    parser = argparse.ArgumentParser(description="fraser's git commands")
+    subparsers = parser.add_subparsers(help="specific subcommand")
+
+    # `new-branch` subcommand
+    parser_new_branch = subparsers.add_parser(
+        "new-branch", help="add a new local branch and push it upstream"
+    )
+    parser_new_branch.add_argument(
+        "branch_name", metavar="branch-name", help="name of new branch"
+    )
+    parser_new_branch.add_argument(
+        "--fork", default="origin", help="name of forked remote"
+    )
+    parser_new_branch.set_defaults(func=new_branch)
+
+    return parser
+
+if __name__ == "__main__":
+    args = fraygit_parser().parse_args()
+    args.func(args)
