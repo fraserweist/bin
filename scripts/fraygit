@@ -30,6 +30,8 @@ def kill_branch(args):
     print(commands.branch(args.branch, D=True))
     print("deleting branch {} from remote {}".format(args.branch, args.remote))
     commands.push(args.remote, args.branch, delete=True)
+    print("rebasing master")
+    print(commands.pull('origin', 'master', rebase=True))
 
 
 def commit_all(args):
