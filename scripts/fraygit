@@ -11,6 +11,13 @@ def new_branch(args):
     commands.checkout(b=args.branch_name)
     commands.push(args.fork, args.branch_name, u=True)
 
+def commit_all(args):
+    repo = git.Repo(".")
+    commands = repo.git
+    print(commands.add(A=True, v=True))
+    print(commands.commit(m=args.message))
+    print(commands.push())
+
 def fraygit_parser():
     parser = argparse.ArgumentParser(description="fraser's git commands")
     subparsers = parser.add_subparsers(help="specific subcommand")
@@ -26,6 +33,15 @@ def fraygit_parser():
         "--fork", default="origin", help="name of forked remote"
     )
     parser_new_branch.set_defaults(func=new_branch)
+
+    # `commit-all` subcommand
+    parser_commit_all = subparsers.add_parser(
+        "commit-all", help="add all files, commit them, and push to remote"
+    )
+    parser_commit_all.add_argument(
+        "message", metavar="commit-message", help="the commit message"
+    )
+    parser_commit_all.set_defaults(func=commit_all)
 
     return parser
 
