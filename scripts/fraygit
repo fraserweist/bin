@@ -16,7 +16,8 @@ def commit_all(args):
     commands = repo.git
     print(commands.add(A=True, v=True))
     print(commands.commit(m=args.message))
-    print(commands.push())
+    commands.push()
+    print("pushed to remote")
 
 def fraygit_parser():
     parser = argparse.ArgumentParser(description="fraser's git commands")
