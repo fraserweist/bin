@@ -3,6 +3,7 @@
 import git
 import argparse
 
+
 def new_branch(args):
     repo = git.Repo(".")
     commands = repo.git
@@ -11,6 +12,7 @@ def new_branch(args):
     commands.checkout(b=args.branch_name)
     commands.push(args.fork, args.branch_name, u=True)
 
+
 def commit_all(args):
     repo = git.Repo(".")
     commands = repo.git
@@ -18,6 +20,15 @@ def commit_all(args):
     print(commands.commit(m=args.message))
     commands.push()
     print("pushed to remote")
+
+
+def merged_pr(args):
+    repo = git.Repo(".")
+    commands = repo.git
+    print(commands.checkout("master"))
+    print(commands.branch(args.branch, D=True))
+    print(commands.pull('origin', 'master', rebase=True))
+
 
 def fraygit_parser():
     parser = argparse.ArgumentParser(description="fraser's git commands")
@@ -44,7 +55,17 @@ def fraygit_parser():
     )
     parser_commit_all.set_defaults(func=commit_all)
 
+    # `merged-pr` subcommand
+    parser_merged_pr = subparsers.add_parser(
+        "merged-pr", help="delete branch and rebase master when PR is merged"
+    )
+    parser_merged_pr.add_argument(
+        "branch", help="name of development branch"
+    )
+    parser_merged_pr.set_defaults(func=merged_pr)
+
     return parser
+
 
 if __name__ == "__main__":
     args = fraygit_parser().parse_args()
