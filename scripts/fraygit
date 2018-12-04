@@ -7,10 +7,14 @@ import argparse
 def new_branch(args):
     repo = git.Repo(".")
     commands = repo.git
-    print(commands.checkout("master"))
+    print("checking out master")
+    commands.checkout("master")
+    print("rebasing master")
     print(commands.pull('origin', 'master', rebase=True))
-    print(commands.checkout(b=args.branch))
-    print(commands.push(args.remote, args.branch, u=True))
+    print("creating new branch {}".format(args.branch))
+    commands.checkout(b=args.branch)
+    print("pushing branch {} to remote {}".format(args.branch, args.remote))
+    commands.push(args.remote, args.branch, u=True)
 
 
 def commit_all(args):
@@ -18,7 +22,7 @@ def commit_all(args):
     commands = repo.git
     print(commands.add(A=True, v=True))
     print(commands.commit(m=args.message))
-    print(commands.push())
+    commands.push()
     print("pushed to remote")
 
 
