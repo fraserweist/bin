@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+remote="$1"
+branch="$2"
+git checkout master
+git pull --rebase origin master
+git checkout -b $branch
+git push -u $remote $branch
